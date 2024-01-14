@@ -12,6 +12,7 @@ const typeDefinitions = /* GraphQL */ `
   type Mutation {
     createList(description: String!): List!
     createItemOnList(listId: ID!, name: String!): Item!
+    deleteItem(id: ID!): Item
   }
 
   type List {
@@ -97,6 +98,16 @@ const resolvers = {
         },
       });
       return newItem;
+    },
+    async deleteItem(
+      parent: unknown,
+      args: { id: string },
+      context: GraphQLContext
+    ) {
+      const deletedItem = await context.prisma.item.delete({
+        where: { id: parseInt(args.id) },
+      });
+      return deletedItem;
     },
   },
 };
