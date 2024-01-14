@@ -10,7 +10,7 @@ generator client {
 model List {
   id          Int      @id @default(autoincrement())
   createdAt   DateTime @default(now())
-  description String
+  description String?  @default("New List")
   name        String   @default("New List")
   tag         String?
   Item        Item[]

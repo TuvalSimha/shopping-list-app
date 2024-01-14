@@ -10,9 +10,9 @@ const typeDefinitions = /* GraphQL */ `
   }
 
   type Mutation {
-    createList(description: String!): List!
+    createList(name: String!): List!
     deleteList(id: ID!): List
-    updateList(id: ID!, description: String!): List
+    updateList(id: ID!, name: String!): List
     createItemOnList(listId: ID!, name: String!): Item!
     deleteItem(id: ID!): Item
     updateItem(id: ID!, name: String!): Item
@@ -20,7 +20,7 @@ const typeDefinitions = /* GraphQL */ `
 
   type List {
     id: ID!
-    description: String!
+    description: String
     name: String!
     tag: String
     items: [Item!]!
@@ -79,12 +79,12 @@ const resolvers = {
   Mutation: {
     async createList(
       parent: unknown,
-      args: { description: string },
+      args: { name: string },
       context: GraphQLContext
     ) {
       const newList = await context.prisma.list.create({
         data: {
-          description: args.description,
+          name: args.name,
         },
       });
       return newList;
