@@ -13,6 +13,7 @@ const typeDefinitions = /* GraphQL */ `
     createList(description: String!): List!
     createItemOnList(listId: ID!, name: String!): Item!
     deleteItem(id: ID!): Item
+    updateItem(id: ID!, name: String!): Item
   }
 
   type List {
@@ -108,6 +109,17 @@ const resolvers = {
         where: { id: parseInt(args.id) },
       });
       return deletedItem;
+    },
+    async updateItem(
+      parent: unknown,
+      args: { id: string; name: string },
+      context: GraphQLContext
+    ) {
+      const updatedItem = await context.prisma.item.update({
+        where: { id: parseInt(args.id) },
+        data: { name: args.name },
+      });
+      return updatedItem;
     },
   },
 };
