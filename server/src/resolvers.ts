@@ -3,8 +3,26 @@ import type { GraphQLContext } from "./context";
 
 export const resolvers = {
   Query: {
-    lists: (parent: unknown, args: {}, context: GraphQLContext) =>
-      context.prisma.list.findMany(),
+    async lists(
+      parent: unknown,
+      args: { status?: string },
+      context: GraphQLContext
+    ) {
+      const where = args.status
+        ? {
+            status: args.status,
+          }
+        : {};
+
+      return context.prisma.list.findMany({
+        where,
+      });
+    },
+    async list(parent: unknown, args: { id: string }, context: GraphQLContext) {
+      return context.prisma.list.findUnique({
+        where: { id: parseInt(args.id) },
+      });
+    },
     items: (parent: unknown, args: {}, context: GraphQLContext) =>
       context.prisma.item.findMany(),
     item: (parent: unknown, args: { id: string }, context: GraphQLContext) =>
@@ -22,6 +40,7 @@ export const resolvers = {
     createdAt: (parent: List) => parent.createdAt,
     name: (parent: List) => parent.name,
     tag: (parent: List) => parent.tag,
+    status: (parent: List) => parent.status,
   },
   Item: {
     id: (parent: Item) => parent.id,
@@ -31,17 +50,19 @@ export const resolvers = {
     price: (parent: Item) => parent.price,
     description: (parent: Item) => parent.description,
     createdAt: (parent: Item) => parent.createdAt,
-    status: (parent: Item) => parent.status,
+    status: (parent: Item) => parent.itemStatus,
   },
   Mutation: {
     async createList(
       parent: unknown,
-      args: { name: string },
+      args: { name: string; description: string; tag: string },
       context: GraphQLContext
     ) {
       const newList = await context.prisma.list.create({
         data: {
           name: args.name,
+          description: args.description,
+          tag: args.tag,
         },
       });
       return newList;
